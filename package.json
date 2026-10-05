@@ -1,0 +1,17 @@
+{
+  "name": "loto-drill",
+  "version": "1.0.0",
+  "description": "厂内检修断电挂牌演练 Web 应用（有向供电关系 / 挂牌上锁 / 检修许可 / 乐观修订号 / 审计日志）",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "init-db": "node server/init-db.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "express": "^4.19.2"
+  }
+}

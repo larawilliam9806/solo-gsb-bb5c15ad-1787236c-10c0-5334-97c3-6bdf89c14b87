@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>厂内检修断电挂牌演练系统</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 登录视图 -->
+  <div id="login-view" class="login-view hidden">
+    <form id="login-form" class="login-card">
+      <div class="login-logo">🔒</div>
+      <h1>断电挂牌演练系统</h1>
+      <p class="login-sub">Lock-Out / Tag-Out 检修隔离演练</p>
+      <label>账号
+        <input type="text" id="login-username" autocomplete="username" value="operator" required />
+      </label>
+      <label>密码
+        <input type="password" id="login-password" autocomplete="current-password" value="operator123" required />
+      </label>
+      <button type="submit" class="btn primary">登 录</button>
+      <div id="login-error" class="login-error"></div>
+      <div class="login-hint">
+        演示账号：<b>admin / admin123</b>（管理员）、<b>operator / operator123</b>（操作员）
+      </div>
+    </form>
+  </div>
+
+  <!-- 主应用 -->
+  <div id="app-view" class="app-view hidden">
+    <header class="topbar">
+      <div class="brand">⚡ 厂内检修断电挂牌演练</div>
+      <div class="top-meta">
+        <span class="rev-badge" title="网络修订号：所有变更须携带当前所见修订号">
+          修订号 <b id="rev-value">0</b>
+        </span>
+        <span class="user-badge">
+          <span id="user-name"></span>
+          <span id="user-role" class="role-tag"></span>
+        </span>
+        <button id="btn-logout" class="btn small">退出</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <main class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <div class="tabs">
+            <button class="tab active" data-tab="network">供电网络图</button>
+            <button class="tab" data-tab="audit">审计日志</button>
+          </div>
+          <div id="admin-tools" class="admin-tools hidden">
+            <button id="btn-add-source" class="btn small">＋电源</button>
+            <button id="btn-add-switch" class="btn small">＋开关</button>
+            <button id="btn-add-device" class="btn small">＋设备</button>
+            <button id="btn-connect" class="btn small">🔗 连线模式</button>
+          </div>
+        </div>
+
+        <div id="network-pane">
+          <svg id="grid" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a8aa3"></path>
+              </marker>
+              <marker id="arrow-fed" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#f0b429"></path>
+              </marker>
+              <marker id="arrow-fail" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#e23d3d"></path>
+              </marker>
+            </defs>
+            <g id="edge-layer"></g>
+            <g id="node-layer"></g>
+          </svg>
+          <div class="legend">
+            <span><i class="dot source-on"></i>启用电源</span>
+            <span><i class="dot source-off"></i>停用电源</span>
+            <span><i class="dot sw-closed"></i>合闸开关</span>
+            <span><i class="dot sw-open"></i>断开开关</span>
+            <span><i class="dot sw-tagged"></i>挂牌开关</span>
+            <span><i class="dot device"></i>设备</span>
+            <span><i class="line-fed"></i>物理有电</span>
+            <span><i class="line-fail"></i>未切断路径</span>
+          </div>
+        </div>
+
+        <div id="audit-pane" class="hidden">
+          <div class="audit-toolbar">
+            <span>最近 <b id="audit-count">0</b> 条记录（成功变更留存操作者、时间与前后状态）</span>
+            <button id="btn-refresh-audit" class="btn small">刷新</button>
+          </div>
+          <div id="audit-list" class="audit-list"></div>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <section id="inspector" class="panel">
+          <h2>节点详情</h2>
+          <div id="inspector-body" class="muted">点击图中的节点查看详情与操作。</div>
+        </section>
+
+        <section class="panel">
+          <h2>检修许可</h2>
+          <div id="permits-body"></div>
+        </section>
+
+        <section class="panel">
+          <h2>隔离判定</h2>
+          <div id="paths-body" class="muted">选择设备后，在此查看启用电源到设备的路径分析。</div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- 通用提示条 -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="graph-logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

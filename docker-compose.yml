@@ -1,0 +1,32 @@
+services:
+  loto-drill:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: loto-drill:latest
+    container_name: loto-drill
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      # 容器内固定监听 3000；宿主机端口由 APP_PORT 控制
+      PORT: 3000
+      HOST: 0.0.0.0
+      DB_PATH: /app/data/loto.db
+      # 会话 Cookie 签名密钥：生产环境请在 .env 中固定一个随机串
+      SESSION_SECRET: ${SESSION_SECRET:-please-change-me-in-env}
+    volumes:
+      - loto-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://127.0.0.1:3000/api/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 8s
+
+volumes:
+  loto-data:
